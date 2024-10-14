@@ -8,7 +8,7 @@
 import Foundation
 
 extension CachedImageLoader {
-  public static var shared: CachedImageLoader { .init() }
+  public static var shared: CachedImageLoader = .init()
 }
 
 public final class CachedImageLoader {
