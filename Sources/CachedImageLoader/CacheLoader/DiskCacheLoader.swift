@@ -26,6 +26,11 @@ internal final class DiskCacheLoader: CacheLoader {
           // Get local image path
           let localImagePath = self.localImageURL(imageURL).path
           
+          // If the directory does exits, remove it
+          if self.fm.fileExists(atPath: localImagePath) {
+            try self.fm.removeItem(atPath: localImagePath)
+          }
+          
           // Convert value to data
           let data = try JSONEncoder().encode(value)
           
