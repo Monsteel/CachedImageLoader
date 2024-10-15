@@ -75,7 +75,11 @@ internal final class DiskCacheLoader: CacheLoader {
       .userDomainMask,
       true
     )[0] as NSString
-    return URL(fileURLWithPath: documentDirectoryPath.appendingPathComponent("\(imageURL.lastPathComponent)"))
+    
+    // Get image container directory path
+    let imageContainerDirectoryPath = documentDirectoryPath.appendingPathComponent("cachedImageLoader") as NSString
+    
+    return URL(fileURLWithPath: imageContainerDirectoryPath.appendingPathComponent("\(imageURL.lastPathComponent)"))
   }
   
   internal func clear() async {
@@ -88,16 +92,20 @@ internal final class DiskCacheLoader: CacheLoader {
           true
         )[0] as NSString
         
+        // Get image container directory path
+        let imageContainerDirectoryPath = documentDirectoryPath.appendingPathComponent("cachedImageLoader") as NSString
+        
         // Get all files in document directory
-        guard let files = try? self.fm.contentsOfDirectory(atPath: documentDirectoryPath as String) else { return }
+        guard let files = try? self.fm.contentsOfDirectory(atPath: imageContainerDirectoryPath as String) else { return }
         
         // Remove all files in document directory
         for file in files {
-          try? self.fm.removeItem(atPath: documentDirectoryPath.appendingPathComponent(file))
+          try? self.fm.removeItem(atPath: imageContainerDirectoryPath.appendingPathComponent(file))
         }
 
         continuation.resume()
       }
     }
   }
+
 }
