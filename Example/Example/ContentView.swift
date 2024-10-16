@@ -73,7 +73,7 @@ extension ContentView {
   
   private func clearCache() {
     Task {
-      await imageLoader.clearCache()
+      try await imageLoader.clearCache()
     }
   }
 }

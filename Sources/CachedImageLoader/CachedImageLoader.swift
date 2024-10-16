@@ -15,7 +15,7 @@ public final class CachedImageLoader {
   private let remoteLoader: RemoteLoader
   private let diskCacheLoader: CacheLoader
   private let memoryCacheLoader: CacheLoader
-  
+
   private init(
     remoteLoader: RemoteLoader = RemoteLoaderImpl(),
     diskCacheLoader: CacheLoader = DiskCacheLoader(),
@@ -25,53 +25,70 @@ public final class CachedImageLoader {
     self.diskCacheLoader = diskCacheLoader
     self.memoryCacheLoader = memoryCacheLoader
   }
-  
+
   public func load(_ url: URL?, activeDiskCache: Bool = true) async throws -> Data? {
     guard let url = url else { return nil }
-    
+
     // If the image is not in memory cache, try to get it from disk cache
     var imageContainer: CacheContainer?
-    
-    imageContainer = try await memoryCacheLoader.get(for: url.absoluteString)
-    
-    if imageContainer == nil && activeDiskCache {
-      imageContainer = try await diskCacheLoader.get(for: url.absoluteString)
+
+    // Get image container from memory cache
+    let imageContainerFromMemoryCache = try await memoryCacheLoader.get(for: url.absoluteString)
+    imageContainer = imageContainerFromMemoryCache
+
+    // If the image is not in memory cache and the disk cache is active, try to get it from disk cache
+    if imageContainerFromMemoryCache == nil && activeDiskCache {
+      let imageContainerFromDiskCache = try await diskCacheLoader.get(for: url.absoluteString)
+      imageContainer = imageContainerFromDiskCache
     }
 
+    // Fetch image
     let response = try await remoteLoader.fetch(for: url, etag: imageContainer?.etag)
-    
+
     switch response {
     case let .success(data, etag):
-      Task {
-        do {
-          try await memoryCacheLoader.save(
-            for: url.absoluteString,
-            .init(image: data, etag: etag)
-          )
-        }
-      }
+      async {
+        await withTaskGroup(of: Void.self) { [weak self] group in
+          guard let self = self else { return }
 
-      Task {
-        do {
-          try await diskCacheLoader.save(
-            for: url.absoluteString,
-            .init(image: data, etag: etag)
-          )
+          group.addTask {
+            try? await self.memoryCacheLoader.save(
+              for: url.absoluteString,
+              .init(image: data, etag: etag)
+            )
+          }
+          
+          group.addTask {
+            try? await self.diskCacheLoader.save(
+              for: url.absoluteString,
+              .init(image: data, etag: etag)
+            )
+          }
         }
       }
 
       return data
-      
+
     case .notModified:
+      async {
+        guard let imageContainer = imageContainer else { return }
+        if imageContainerFromMemoryCache == nil {
+          try await self.memoryCacheLoader.save(
+            for: url.absoluteString,
+            imageContainer
+          )
+        }
+      }
+
       return imageContainer?.image
-      
+
     case let .failure(error):
       throw error
     }
   }
-  
-  public func clearCache() async {
-    await diskCacheLoader.clear()
-    await memoryCacheLoader.clear()
+
+  public func clearCache() async throws {
+    try await diskCacheLoader.clear()
+    try await memoryCacheLoader.clear()
   }
 }

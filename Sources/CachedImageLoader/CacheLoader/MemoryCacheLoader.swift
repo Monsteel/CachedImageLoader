@@ -4,7 +4,7 @@ import Foundation
 internal final class MemoryCacheLoader: CacheLoader {
   private let cache: NSCache<NSString, NSData>
   private let queue: DispatchQueue
-  
+
   internal init(
     cache: NSCache<NSString, NSData> = NSCache<NSString, NSData>(),
     queue: DispatchQueue = DispatchQueue(label: "CachedImageLoader.MemoryCacheLoader")
@@ -12,7 +12,7 @@ internal final class MemoryCacheLoader: CacheLoader {
     self.cache = cache
     self.queue = queue
   }
-  
+
   internal func save(for key: String, _ value: CacheContainer) async throws {
     try await withCheckedThrowingContinuation { continuation in
       queue.async {
@@ -28,7 +28,7 @@ internal final class MemoryCacheLoader: CacheLoader {
       }
     }
   }
-  
+
   internal func get(for key: String) async throws -> CacheContainer? {
     try await withCheckedThrowingContinuation { continuation in
       queue.async {
@@ -46,9 +46,9 @@ internal final class MemoryCacheLoader: CacheLoader {
       }
     }
   }
-  
-  internal func clear() async {
-    await withCheckedContinuation { continuation in
+
+  internal func clear() async throws {
+    try await withCheckedThrowingContinuation { continuation in
       queue.async {
         self.cache.removeAllObjects()
         continuation.resume()

@@ -6,7 +6,7 @@ internal enum RemoteLoaderErrorFactory {
     case httpResponseIsNotHTTPURLResponse = 0
     case badResponse = 1
   }
-  
+
   internal static func httpResponseIsNotHTTPURLResponse(_ urlResponse: URLResponse) -> NSError {
     NSError(
       domain: "\(Self.self)",
@@ -16,7 +16,7 @@ internal enum RemoteLoaderErrorFactory {
       ]
     )
   }
-  
+
   internal static func badResponse(_ urlResponse: URLResponse) -> NSError {
     NSError(
       domain: "\(Self.self)",
