@@ -10,13 +10,17 @@ let package = Package(
   products: [
     .library(
       name: "CachedImageLoader",
-      targets: ["CachedImageLoader"]),
+      targets: ["CachedImageLoader", "CachedAsyncImage"]),
   ],
   dependencies: [],
   targets: [
     .target(
       name: "CachedImageLoader",
       dependencies: []
+    ),
+    .target(
+      name: "CachedAsyncImage",
+      dependencies: ["CachedImageLoader"]
     ),
   ]
 )
