@@ -54,6 +54,27 @@ public struct DummyView: View {
 }
 ```
 
+You can use `CachedAsyncImage` implemented for SwiftUI.<br>
+
+```swift
+import SwiftUI
+import CachedAsyncImage
+
+struct SampleView: View {
+  let url: URL
+  var body: some View {
+    CachedAsyncImage(url: url, imageLoader: .shared) { image in
+      image
+        .resizable()
+        .scaledToFit()
+        .frame(width: 100)
+    } placeholder: {
+      ProgressView()
+    }
+  }
+}
+```
+
 ## Swift Package Manager (SPM) Installation
 
 ```swift

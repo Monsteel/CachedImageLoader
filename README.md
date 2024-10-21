@@ -56,6 +56,27 @@ public struct DummyView: View {
 }
 ```
 
+SwiftUI를 위해 구현된 `CachedAsyncImage` 를 사용할 수 있습니다.<br>
+
+```swift
+import SwiftUI
+import CachedAsyncImage
+
+struct SampleView: View {
+  let url: URL
+  var body: some View {
+    CachedAsyncImage(url: url, imageLoader: .shared) { image in
+      image
+        .resizable()
+        .scaledToFit()
+        .frame(width: 100)
+    } placeholder: {
+      ProgressView()
+    }
+  }
+}
+```
+
 ## Swift Package Manager(SPM) 을 통해 사용할 수 있어요
 
 ```swift
