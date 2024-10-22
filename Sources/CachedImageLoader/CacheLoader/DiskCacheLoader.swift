@@ -40,8 +40,14 @@ internal final class DiskCacheLoader: CacheLoader {
           let data = try JSONEncoder().encode(value)
 
           // Save image data to local image path
-          self.fm.createFile(atPath: localImagePath, contents: data, attributes: nil)
-          continuation.resume()
+          let result = self.fm.createFile(atPath: localImagePath, contents: data, attributes: nil)
+          
+          // Resume the continuation
+          if result {
+            continuation.resume()
+          } else {
+            continuation.resume(throwing: CacheLoaderErrorFactory.failedToSaveDiskCache(result))
+          }
         } catch {
           continuation.resume(throwing: error)
         }

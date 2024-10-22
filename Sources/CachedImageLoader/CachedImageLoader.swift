@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 extension CachedImageLoader {
   public static var shared: CachedImageLoader = .init()
@@ -26,8 +27,8 @@ public final class CachedImageLoader {
     self.memoryCacheLoader = memoryCacheLoader
   }
 
-  public func load(_ url: URL?, activeDiskCache: Bool = true) async throws -> Data? {
-    guard let url = url else { return nil }
+  public func load(_ url: URL?, activeDiskCache: Bool = true) async throws -> Data {
+    guard let url = url else { throw CachedImageLoaderErrorFactory.urlIsNil() }
 
     // If the image is not in memory cache, try to get it from disk cache
     var imageContainer: CacheContainer?
@@ -47,22 +48,30 @@ public final class CachedImageLoader {
 
     switch response {
     case let .success(data, etag):
-      async {
+      Task {
         await withTaskGroup(of: Void.self) { [weak self] group in
           guard let self = self else { return }
-
+          
           group.addTask {
-            try? await self.memoryCacheLoader.save(
-              for: url.absoluteString,
-              .init(image: data, etag: etag)
-            )
+            do {
+              try await self.memoryCacheLoader.save(
+                for: url.absoluteString,
+                .init(image: data, etag: etag)
+              )
+            } catch {
+              os_log(.error, log: .default, "Failed to save image to memory cache: %s", error.localizedDescription)
+            }
           }
           
           group.addTask {
-            try? await self.diskCacheLoader.save(
-              for: url.absoluteString,
-              .init(image: data, etag: etag)
-            )
+            do {
+              try await self.diskCacheLoader.save(
+                for: url.absoluteString,
+                .init(image: data, etag: etag)
+              )
+            } catch {
+              os_log(.error, log: .default, "Failed to save image to disk cache: %s", error.localizedDescription)
+            }
           }
         }
       }
@@ -70,17 +79,20 @@ public final class CachedImageLoader {
       return data
 
     case .notModified:
-      async {
-        guard let imageContainer = imageContainer else { return }
-        if imageContainerFromMemoryCache == nil {
+      guard let imageContainer = imageContainer else {
+        throw CachedImageLoaderErrorFactory.imageNotInCache(url.absoluteString)
+      }
+
+      if imageContainerFromMemoryCache == nil {
+        Task {
           try await self.memoryCacheLoader.save(
             for: url.absoluteString,
             imageContainer
           )
         }
       }
-
-      return imageContainer?.image
+      
+      return imageContainer.image
 
     case let .failure(error):
       throw error

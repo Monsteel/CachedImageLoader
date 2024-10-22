@@ -67,8 +67,8 @@ public struct CachedAsyncImage<Content: View>: View {
   
   private func load() async {
     do {
-      if let data = try await imageLoader.load(url),
-         let uiImage = UIImage(data: data, scale: scale) {
+      let data = try await imageLoader.load(url)
+      if let uiImage = UIImage(data: data, scale: scale) {
         withAnimation(transaction.animation) {
           phase = .success(Image(uiImage: uiImage))
         }
