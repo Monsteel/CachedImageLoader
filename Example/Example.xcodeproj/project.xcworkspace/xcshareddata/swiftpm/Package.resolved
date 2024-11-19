@@ -1,0 +1,24 @@
+{
+  "originHash" : "593289f6684f8aa306cee2982fa0c71ea5c2e19e7deecdf4f7b62b020e87740c",
+  "pins" : [
+    {
+      "identity" : "dessert",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Monsteel/Dessert.git",
+      "state" : {
+        "revision" : "c36a5d548cb395f9e38f75d9e6116065b948f55f",
+        "version" : "0.0.2"
+      }
+    },
+    {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift.git",
+      "state" : {
+        "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930",
+        "version" : "6.8.0"
+      }
+    }
+  ],
+  "version" : 3
+}

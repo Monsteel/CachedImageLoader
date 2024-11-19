@@ -10,7 +10,6 @@ import Foundation
 internal enum CachedImageLoaderErrorFactory {
   private enum Code: Int {
     case urlIsNil = 0
-    case imageNotInCache = 1
   }
   
   internal static func urlIsNil() -> NSError {
@@ -18,16 +17,6 @@ internal enum CachedImageLoaderErrorFactory {
       domain: "\(Self.self)",
       code: Code.urlIsNil.rawValue,
       userInfo: [:]
-    )
-  }
-  
-  internal static func imageNotInCache(_ url: String) -> NSError {
-    NSError(
-      domain: "\(Self.self)",
-      code: Code.imageNotInCache.rawValue,
-      userInfo: [
-        "url": url
-      ]
     )
   }
 }
