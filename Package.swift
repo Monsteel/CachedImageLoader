@@ -13,7 +13,7 @@ let package = Package(
       targets: ["CachedImageLoader", "CachedAsyncImage"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/Monsteel/Dessert.git", from: "0.1.0"),
+    .package(url: "https://github.com/Monsteel/Dessert.git", from: "0.2.0"),
   ],
   targets: [
     .target(

@@ -9,7 +9,7 @@ import SwiftUI
 import CachedImageLoader
 
 struct ContentView: View {
-  private let imageLoader = CachedImageLoader.shared
+  private let imageLoader = CachedImageLoader.default
   
   @State var image: UIImage? = nil
   @State var loading: Bool = false

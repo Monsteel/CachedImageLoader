@@ -18,7 +18,7 @@ public struct CachedAsyncImage<Content: View>: View {
   
   public init(
     url: URL?,
-    imageLoader: CachedImageLoader = .shared,
+    imageLoader: CachedImageLoader = .default,
     scale: CGFloat = 1
   ) where Content == Image {
     self.init(
@@ -32,7 +32,7 @@ public struct CachedAsyncImage<Content: View>: View {
   
   public init<I: View, P: View>(
     url: URL?,
-    imageLoader: CachedImageLoader = .shared,
+    imageLoader: CachedImageLoader = .default,
     scale: CGFloat = 1,
     @ViewBuilder content: @escaping (Image) -> I,
     @ViewBuilder placeholder: @escaping () -> P
@@ -52,7 +52,7 @@ public struct CachedAsyncImage<Content: View>: View {
   
   public init(
     url: URL?,
-    imageLoader: CachedImageLoader = .shared,
+    imageLoader: CachedImageLoader = .default,
     scale: CGFloat = 1,
     transaction: Transaction = .init(),
     @ViewBuilder content: @escaping (CachedAsyncImagePhase) -> Content

@@ -10,14 +10,25 @@ import Foundation
 import os
 
 extension CachedImageLoader {
-  public static var shared: CachedImageLoader = .init()
+  public static var `default`: CachedImageLoader = .init()
 }
 
 public final class CachedImageLoader {
   private let routerManager: RouterManager<ImageLoaderAPI>
 
-  private init(
-    routerManager: RouterManager<ImageLoaderAPI> = .init()
+  public init(
+    routerManager: RouterManager<ImageLoaderAPI> = {
+      let nsCache = NSCache<NSString, NSData>()
+      nsCache.countLimit = 100 // 100 images
+      nsCache.totalCostLimit = 1024 * 1024 * 10 // 10MB
+
+      return .init(
+        diskCacheLoader: .init(
+          path: "CachedImageLoader"
+        ),
+        memoryCacheLoader: .init(cache: nsCache)
+      )
+    }()
   ) {
     self.routerManager = routerManager
   }
@@ -29,6 +40,6 @@ public final class CachedImageLoader {
   }
 
   public func clearCache() async throws {
-    try await CacheManager.shared.clear()
+    try await CacheManager.default.clear()
   }
 }
