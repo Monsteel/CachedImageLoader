@@ -21,7 +21,7 @@ import SwiftUI
 import CachedImageLoader
 
 public struct DummyView: View {
-  private let imageLoader = CachedImageLoader.shared
+  private let imageLoader = CachedImageLoader.default
   @State var image: UIImage? = nil
 
   public var body: some View {
@@ -41,7 +41,7 @@ import SwiftUI
 import CachedImageLoader
 
 public struct DummyView: View {
-  private let imageLoader = CachedImageLoader.shared
+  private let imageLoader = CachedImageLoader.default
 
   public var body: some View {
     // Binding the state.
@@ -63,7 +63,7 @@ import CachedAsyncImage
 struct SampleView: View {
   let url: URL
   var body: some View {
-    CachedAsyncImage(url: url, imageLoader: .shared) { image in
+    CachedAsyncImage(url: url, imageLoader: .default) { image in
       image
         .resizable()
         .scaledToFit()
