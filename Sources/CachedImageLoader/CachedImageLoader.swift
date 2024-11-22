@@ -14,23 +14,34 @@ extension CachedImageLoader {
 }
 
 public final class CachedImageLoader {
-  private let routerManager: RouterManager<ImageLoaderAPI>
+
+  private let diskCacheLoader: DiskCacheLoader
+  private let memoryCacheLoader: MemoryCacheLoader
+
+  private lazy var routerManager = RouterManager<ImageLoaderAPI>.init(
+    diskCacheLoader: diskCacheLoader,
+    memoryCacheLoader: memoryCacheLoader
+  )
+
+  private lazy var cacheManager = CacheManager(
+    memoryCacheLoader: memoryCacheLoader,
+    diskCacheLoader: diskCacheLoader
+  )
 
   public init(
-    routerManager: RouterManager<ImageLoaderAPI> = {
+    diskCacheLoader: DiskCacheLoader = .init(
+      path: "CachedImageLoader"
+    ),
+    memoryCacheLoader: MemoryCacheLoader = {
       let nsCache = NSCache<NSString, NSData>()
       nsCache.countLimit = 100 // 100 images
       nsCache.totalCostLimit = 1024 * 1024 * 10 // 10MB
 
-      return .init(
-        diskCacheLoader: .init(
-          path: "CachedImageLoader"
-        ),
-        memoryCacheLoader: .init(cache: nsCache)
-      )
+      return .init(cache: nsCache)
     }()
   ) {
-    self.routerManager = routerManager
+    self.diskCacheLoader = diskCacheLoader
+    self.memoryCacheLoader = memoryCacheLoader
   }
 
   public func load(_ url: URL?, activeDiskCache: Bool = true) async throws -> Data {
@@ -40,6 +51,6 @@ public final class CachedImageLoader {
   }
 
   public func clearCache() async throws {
-    try await CacheManager.default.clear()
+    try await cacheManager.clear()
   }
 }

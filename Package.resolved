@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Monsteel/Dessert.git",
       "state" : {
-        "revision" : "f06a44948acb1de7f349dc1f382cc32c03019dc2",
-        "version" : "0.2.0"
+        "revision" : "c90b99a680760b2466d6fda41824e3783e1a3ebe",
+        "version" : "0.2.1"
       }
     },
     {
