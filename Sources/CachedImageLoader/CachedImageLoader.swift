@@ -13,19 +13,19 @@ extension CachedImageLoader {
   public static var `default`: CachedImageLoader = .init()
 }
 
-public final class CachedImageLoader {
+public actor CachedImageLoader: Sendable {
 
   private let diskCacheLoader: DiskCacheLoader
   private let memoryCacheLoader: MemoryCacheLoader
 
   private lazy var routerManager = RouterManager<ImageLoaderAPI>.init(
-    diskCacheLoader: diskCacheLoader,
-    memoryCacheLoader: memoryCacheLoader
+    diskCacheLoader: self.diskCacheLoader,
+    memoryCacheLoader: self.memoryCacheLoader
   )
 
   private lazy var cacheManager = CacheManager(
-    memoryCacheLoader: memoryCacheLoader,
-    diskCacheLoader: diskCacheLoader
+    memoryCacheLoader: self.memoryCacheLoader,
+    diskCacheLoader: self.diskCacheLoader
   )
 
   public init(
