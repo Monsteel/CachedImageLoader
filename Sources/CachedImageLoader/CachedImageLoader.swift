@@ -30,6 +30,7 @@ public actor CachedImageLoader: Sendable {
 
   public init(
     diskCacheLoader: DiskCacheLoader = .init(
+      totalCostLimit: 1024 * 1024 * 10, // 10MB
       path: "CachedImageLoader"
     ),
     memoryCacheLoader: MemoryCacheLoader = {
